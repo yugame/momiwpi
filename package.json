@@ -13,5 +13,24 @@
     "express": "~4.13.4",
     "morgan": "~1.7.0",
     "serve-favicon": "~2.3.0"
-  }
+  },
+  "description": "momiw.com wechat public interface",
+  "main": "app.js",
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://yugame@github.com/yugame/momiwpi.git"
+  },
+  "keywords": [
+    "momiw.com",
+    "wechat",
+    "public",
+    "interface"
+  ],
+  "author": "yaya",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/yugame/momiwpi/issues"
+  },
+  "homepage": "https://github.com/yugame/momiwpi#readme"
 }
