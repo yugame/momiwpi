@@ -4,4 +4,16 @@
 var MConfig = {};
 MConfig.listenPort = 6001;
 
+MConfig.srv = {
+    appid: "appid"
+    ,appsecret: "appsecret"
+    ,token: "token"
+    ,encodingAESKey: "encodingAESKey"
+
+    //,srv_name:"awx_sword"
+    //,srv_addr:"http://sword.momiw.com:20066/"
+    ,myName:"web_sword"
+};
+
+
 module.exports = MConfig;

@@ -14,7 +14,9 @@
     "ejs": "~2.4.1",
     "express": "~4.13.4",
     "morgan": "~1.7.0",
-    "serve-favicon": "~2.3.0"
+    "serve-favicon": "~2.3.0",
+    "wechat": "^2.0.3",
+    "wechat-api": "^1.28.0"
   },
   "description": "momiw.com wechat public interface",
   "main": "app.js",
