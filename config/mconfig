@@ -1,0 +1,7 @@
+/**
+ * Created by yushi on 2016/8/3.
+ */
+var MConfig = {};
+MConfig.listenPort = 6001;
+
+module.exports = MConfig;
