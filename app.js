@@ -7,6 +7,7 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
+var M_interface = require('./routes/interface')
 
 var app = express();
 
@@ -24,6 +25,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+app.use('/interface', M_interface);
 
 var WechatSrv = require('./wechat/wechat_srv');
 new WechatSrv(app, null, G_config.srv);

@@ -5,7 +5,7 @@ var Fs = require('fs');
 var Wechat = require('wechat');
 var WechatAPI = require('wechat-api');
 
-//在express的app上佳节一个微信公众号提供服务
+//在express的app上嫁接一个微信公众号提供服务
 var WechatSrv = function(p_app, p_link, p_config) {
     this.m_admin = p_config.adminOpenID;
     this.m_api = new WechatAPI(p_config.appid, p_config.appsecret);
@@ -124,8 +124,6 @@ WechatSrv.prototype.f_updateMenu = function (p_func) {
 };
 
 WechatSrv.prototype.f_isAdmin = function (p_user) {
-    console.log(p_user);
-    console.log(this.m_admin);
     return p_user === this.m_admin;
 };
 
@@ -175,6 +173,5 @@ WechatSrv.prototype.f_noticeRoute = function (p_user, p_type, p_msg, p_res) {
     console.log('notice ' + p_user + ' ' + p_type);
     //self.m_mid.f_notice(_tobot);
 };
-
 
 module.exports = WechatSrv;
