@@ -10,8 +10,9 @@ try {
   G_config = require(m_path);
 }
 catch(p_err){
-  G_config = require('../config/mconfig');
-  console.log('Load local mconfig fail use default. Find mconfig format at ./config');
+  //G_config = require('../config/mconfig');
+  console.log('Load local mconfig fail use default. Find mconfig format at ./config/sample_mconfig');
+  return;
 }
 
 var app = require('../app');
