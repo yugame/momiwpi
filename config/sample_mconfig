@@ -13,6 +13,7 @@ MConfig.srv = {
     //,srvName:"test_game"
     //,srvAddr:"http://sword.momiw.com:20066/"
     ,myName:"web_sword"
+    ,adminOpenID:"openID"
 };
 
 
