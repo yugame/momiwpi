@@ -5,13 +5,12 @@
  */
 //console.log(process.argv);
 //console.log(process.env);
-var m_path = process.cwd() + '/mconfig';
+G_path = process.cwd() + '/';
 try {
-  G_config = require(m_path);
+  G_config = require(G_path + 'mconfig');
 }
 catch(p_err){
-  //G_config = require('../config/mconfig');
-  console.log('Load local mconfig fail use default. Find mconfig format at ./config/sample_mconfig');
+  console.log('Load local mconfig fail. Find mconfig format at ./config/sample_mconfig');
   return;
 }
 

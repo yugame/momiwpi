@@ -9,6 +9,19 @@ var Account = require('../db/account');
 
 //在express的app上嫁接一个微信公众号提供服务
 var WechatSrv = function(p_app, p_link, p_config) {
+    if(p_config.logic){
+        try {
+            this.m_logic = require(G_path + p_config.logic);
+        }
+        catch(p_err){
+            console.log('Load local logic fail ' + G_path + p_config.logic);
+            //process.exit();
+        }
+    }
+    if(!this.m_logic){
+        this.m_logic = require('../config/sample_logic');
+        console.log('use local sample logic. Find format at ./config/sample_logic');
+    }
     this.m_data = new DataEngine(p_config.dbUrl);
     var self = this;
     this.m_data.f_connect(function (p_err) {
@@ -186,18 +199,7 @@ WechatSrv.prototype.f_toRoute = function (p_user, p_uid, p_type, p_msg, p_res) {
             }
         }
     }
-
-    if(_cmd.type === 'cmd'){
-        if(_cmd.msg === 'normal'){
-            p_res.reply(_cmd.user + ' ' +  p_uid + ' normal');
-        }
-        else{
-            p_res.reply(_cmd.msg);
-        }
-    }
-    else{
-        p_res.reply(_cmd.type);
-    }
+    this.m_logic.F_recv(_cmd, p_res);
 
     //self.m_mid.f_sendMsg(_cmd, p_res);
 };

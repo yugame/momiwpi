@@ -15,6 +15,7 @@ MConfig.srv = {
     ,myName:"web_sword"
     ,adminOpenID:"openID"
     ,dbUrl:"mongodb://localhost/dbname"
+    ,logic:"logic/main.js"
 };
 
 
