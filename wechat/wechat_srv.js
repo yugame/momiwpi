@@ -199,7 +199,12 @@ WechatSrv.prototype.f_toRoute = function (p_user, p_uid, p_type, p_msg, p_res) {
             }
         }
     }
-    this.m_logic.F_recv(_cmd, p_res);
+    try {
+        this.m_logic.F_recv(_cmd, p_res);
+    }
+    catch(p_err){
+        console.log(p_err);
+    }
 
     //self.m_mid.f_sendMsg(_cmd, p_res);
 };
