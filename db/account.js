@@ -6,7 +6,7 @@ var M_schema = {
     openID: {type: String, unique: true},
     unionID: String,
     userInfo: {},
-    firstTime: Number
+    createTime: Number
 };
 
 var Account = function (p_dataEngine) {
@@ -18,7 +18,7 @@ Account.prototype.f_createAccount = function(p_params, p_callback) {
         openID: p_params.openID,
         unionID: p_params.unionID,
         userInfo: p_params.userInfo,
-        create_time: Date.now()
+        createTime: Date.now()
     });
     _account.save(p_callback);
 };
