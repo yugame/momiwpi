@@ -6,23 +6,27 @@ var Wechat = require('wechat');
 var WechatAPI = require('wechat-api');
 var DataEngine = require('../db/data_engine');
 var Account = require('../db/account');
+var Logic = null;
 
 //在express的app上嫁接一个微信公众号提供服务
 var WechatSrv = function(p_app, p_link, p_config) {
     if(p_config.logic){
         try {
-            this.m_logic = require(G_path + p_config.logic);
+            Logic = require(G_path + p_config.logic);
         }
         catch(p_err){
             console.log('Load local logic fail ' + G_path + p_config.logic);
             //process.exit();
         }
     }
-    if(!this.m_logic){
-        this.m_logic = require('../config/sample_logic');
+    if(!Logic){
+        Logic = require('../config/sample_logic');
         console.log('use local sample logic. Find format at ./config/sample_logic');
     }
+
+    this.m_logic = new Logic(this);
     this.m_data = new DataEngine(p_config.dbUrl);
+
     var self = this;
     this.m_data.f_connect(function (p_err) {
         if(p_err){
@@ -41,10 +45,6 @@ WechatSrv.prototype.f_listen = function(p_app, p_link, p_config){
         console.log(p_token);
     });
 
-    /*
-     this.m_mid = new MID(_api, p_link);
-     */
-
     var _route = '/' + p_config.myName;
     console.log(_route);
 
@@ -52,6 +52,7 @@ WechatSrv.prototype.f_listen = function(p_app, p_link, p_config){
     p_app.use(_route, Wechat(p_config, function (p_req, p_res, p_next) {
         var _msg = p_req.weixin;
         var _openID = _msg.FromUserName; //用户的OPENID
+
         self.m_account.f_getUID(_openID, function (p_err, p_uid) {
             if(p_err){
                 console.log(p_err);
@@ -200,13 +201,40 @@ WechatSrv.prototype.f_toRoute = function (p_user, p_uid, p_type, p_msg, p_res) {
         }
     }
     try {
-        this.m_logic.F_recv(_cmd, p_res);
+        this.m_logic.f_recv(_cmd, p_res);
     }
     catch(p_err){
         console.log(p_err);
     }
+};
 
-    //self.m_mid.f_sendMsg(_cmd, p_res);
+//处理微信返回的信息
+WechatSrv.prototype.f_srvBack = function(p_openID, p_text, p_err, p_result){
+    if (p_err) {
+        ShowLog('srv: ' + p_openID + ' ' + p_err + ' errcode: ' + p_err.code);
+        console.log(p_text);
+        if(p_err.code == 45047){
+            //转为推送模板消息
+            //this.f_workNotice(p_openID, p_text);
+        }
+    }
+};
+
+//主动推消息给用户 p_uid 是联合unionid 需要转为 openID 使用
+WechatSrv.prototype.f_push = function (p_uid, p_msg) {
+    var self = this;
+    this.m_account.f_getOpenID(p_uid, function (p_err, p_openID) {
+        if(p_err){
+            console.log(p_err);
+            return;
+        }
+        if(!p_openID){
+            console.log('f_push can not find uid with ' + p_uid);
+            console.log(p_msg);
+            return;
+        }
+        self.m_api.sendText(p_openID, p_msg, self.f_srvBack.bind(self, p_openID, p_msg));
+    });
 };
 
 //通知路由 肯定不需要回复
