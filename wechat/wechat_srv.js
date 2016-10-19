@@ -6,6 +6,7 @@ var Wechat = require('wechat');
 var WechatAPI = require('wechat-api');
 var DataEngine = require('../db/data_engine');
 var Account = require('../db/account');
+var Payment = require('./payment');
 var Logic = null;
 
 //在express的app上嫁接一个微信公众号提供服务
@@ -25,8 +26,20 @@ var WechatSrv = function(p_app, p_link, p_config) {
     }
 
     this.m_logic = new Logic(this);
-    this.m_data = new DataEngine(p_config.dbUrl);
 
+//支付配置
+/*
+    var _config = {
+        partnerKey: p_config.partnerKey,
+        appId: p_config.appid,
+        mchId: p_config.mchId,
+        notifyUrl: p_config.notifyUrl,
+        pfx: Fs.readFileSync("./apiclient_cert.p12")
+    };
+
+    this.m_payment = new Payment(_config);
+*/
+    this.m_data = new DataEngine(p_config.dbUrl);
     var self = this;
     this.m_data.f_connect(function (p_err) {
         if(p_err){
@@ -234,6 +247,36 @@ WechatSrv.prototype.f_push = function (p_uid, p_msg) {
             return;
         }
         self.m_api.sendText(p_openID, p_msg, self.f_srvBack.bind(self, p_openID, p_msg));
+    });
+};
+
+//发送红包接口
+/*
+红包格式
+ act_name       活动名称 （不显示给用户）
+ remark         备注信息 （不显示给用户）
+ send_name      红包发送者名称
+ total_amount   红包大小 单位分
+ total_num      接收人数 大于1人则为裂变红包 裂变目前只能全随机
+ wishing        红包祝福语 小于128字符
+ serial         红包序号 内部管理用
+ */
+WechatSrv.prototype.f_redPack = function (p_uid, p_red) {
+    var self = this;
+    this.m_account.f_getOpenID(p_uid, function (p_err, p_openID) {
+        if(p_err){
+            console.log(p_err);
+            return;
+        }
+        if(!p_openID){
+            console.log('f_redPack can not find uid with ' + p_uid);
+            return;
+        }
+        this.m_payment.f_sendRedPack(p_openID, p_red, function (p_err, p_data) {
+            if(p_err){
+                console.log(p_err);
+            }
+        });
     });
 };
 

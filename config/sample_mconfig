@@ -16,6 +16,11 @@ MConfig.srv = {
     ,adminOpenID:"openID"
     ,dbUrl:"mongodb://localhost/dbname"
     ,logic:"logic/main.js"
+
+    //支付相关
+    ,mchId:"mchId"
+    ,partnerKey:"partnerKey"
+    ,notifyUrl:"notifyUrl"
 };
 
 

@@ -13,12 +13,14 @@
     "debug": "~2.2.0",
     "ejs": "~2.4.1",
     "express": "~4.13.4",
+    "moment": "^2.15.1",
     "mongoose": "^4.5.9",
     "morgan": "~1.7.0",
     "serve-favicon": "~2.3.0",
     "wechat": "^2.0.3",
     "wechat-api": "^1.28.0",
-    "wechat-oauth": "^1.1.1"
+    "wechat-oauth": "^1.1.1",
+    "wechat-pay": "^0.2.4"
   },
   "description": "momiw.com wechat public interface",
   "main": "app.js",
