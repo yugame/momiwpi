@@ -18,9 +18,11 @@ MConfig.srv = {
     ,logic:"logic/main.js"
 
     //支付相关
+    ,pay:"false" //使用支付相关开关
     ,mchId:"mchId"
     ,partnerKey:"partnerKey"
     ,notifyUrl:"notifyUrl"
+    ,cert:"./apiclient_cert.p12"
 };
 
 

@@ -28,17 +28,18 @@ var WechatSrv = function(p_app, p_link, p_config) {
     this.m_logic = new Logic(this);
 
 //支付配置
-/*
-    var _config = {
-        partnerKey: p_config.partnerKey,
-        appId: p_config.appid,
-        mchId: p_config.mchId,
-        notifyUrl: p_config.notifyUrl,
-        pfx: Fs.readFileSync("./apiclient_cert.p12")
-    };
+    if(p_config.pay) {
+        var _config = {
+            partnerKey: p_config.partnerKey,
+            appId: p_config.appid,
+            mchId: p_config.mchId,
+            notifyUrl: p_config.notifyUrl,
+            pfx: Fs.readFileSync(p_config.cert)
+        };
 
-    this.m_payment = new Payment(_config);
-*/
+        this.m_payment = new Payment(_config);
+    }
+
     this.m_data = new DataEngine(p_config.dbUrl);
     var self = this;
     this.m_data.f_connect(function (p_err) {
@@ -270,6 +271,10 @@ WechatSrv.prototype.f_redPack = function (p_uid, p_red) {
         }
         if(!p_openID){
             console.log('f_redPack can not find uid with ' + p_uid);
+            return;
+        }
+        if(!this.m_payment){
+            console.log('f_redPack with no payment');
             return;
         }
         this.m_payment.f_sendRedPack(p_openID, p_red, function (p_err, p_data) {
