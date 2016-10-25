@@ -47,7 +47,7 @@ Payment.prototype.f_sendRedPack = function (p_openID, p_red, callback) {
     //console.log(_xml);
     var self = this;
     this._httpsRequest(_url, _xml, function(err, body){
-        //console.log(body);
+        console.log(body );
         if(err){
             return callback(err);
         }

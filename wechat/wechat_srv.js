@@ -225,9 +225,10 @@ WechatSrv.prototype.f_toRoute = function (p_user, p_uid, p_type, p_msg, p_res) {
 //处理微信返回的信息
 WechatSrv.prototype.f_srvBack = function(p_openID, p_text, p_err, p_result){
     if (p_err) {
-        ShowLog('srv: ' + p_openID + ' ' + p_err + ' errcode: ' + p_err.code);
+        console.log('srv: ' + p_openID + ' ' + p_err + ' errcode: ' + p_err.code);
         console.log(p_text);
-        if(p_err.code == 45047){
+        //45047发太多了  45015用户沉默了
+        if(p_err.code == 45047 || p_err.code == 45015){
             //转为推送模板消息
             //this.f_workNotice(p_openID, p_text);
         }
@@ -273,11 +274,11 @@ WechatSrv.prototype.f_redPack = function (p_uid, p_red) {
             console.log('f_redPack can not find uid with ' + p_uid);
             return;
         }
-        if(!this.m_payment){
+        if(!self.m_payment){
             console.log('f_redPack with no payment');
             return;
         }
-        this.m_payment.f_sendRedPack(p_openID, p_red, function (p_err, p_data) {
+        self.m_payment.f_sendRedPack(p_openID, p_red, function (p_err, p_data) {
             if(p_err){
                 console.log(p_err);
             }
