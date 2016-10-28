@@ -23,6 +23,9 @@ MConfig.srv = {
     ,partnerKey:"partnerKey"
     ,notifyUrl:"notifyUrl"
     ,cert:"./apiclient_cert.p12"
+
+    //微信网页授权相关
+    ,authUrl:"authUrl"
 };
 
 

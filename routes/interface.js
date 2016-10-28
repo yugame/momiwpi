@@ -3,30 +3,43 @@
  */
 var express = require('express');
 var router = express.Router();
-var M_md5 = require('crypto').createHash('md5');
+var Crypto = require('crypto');
 var OAuth = require('wechat-oauth');
 var M_auth = new OAuth(G_config.srv.appid, G_config.srv.appsecret);
 
-//state 对应的 hash
-var M_stateToHash = {};
-//hash 对应的已解析的 state
-var M_hashToObj = {};
+var M_stateToHash = {}; //state 对应的 hash
+var M_hashToStateObj = {}; //hash 对应的已解析的 stateobj
+var M_login = {}; //sid 对应的 用户
 
 //获取微信授权url地址
 function GetAuthUrl(p_state) {
-    //return M_auth.getAuthorizeURL('http://test.momiw.com/interface/_api', p_state, 'snsapi_base');
-    return M_auth.getAuthorizeURL('http://test.momiw.com/interface/_api', p_state, 'snsapi_userinfo');
+    //return M_auth.getAuthorizeURL(G_config.srv.authUrl, p_state, 'snsapi_base');
+    return M_auth.getAuthorizeURL(G_config.srv.authUrl, p_state, 'snsapi_userinfo');
 }
+
+//创建用户session
+function CreateSession (p_user) {
+    var _sid = Date.now() + '_' + Math.floor(Math.random()*10000000);
+    M_login[_sid] = p_user;
+    return _sid;
+};
 
 //p_state {type:'test', value:11} 执行相关命令
 function DoApi(p_user, p_state, p_res) {
     console.log(p_state);
-    p_res.render('interface', {title: 'Interface', user: p_user, state:p_state});
+    if(p_state.type === 'login'){
+        console.log(p_state.value);
+        p_res.redirect(p_state.value + '?sid=' + CreateSession(p_user));
+    }
+    else{
+        p_res.render('interface', {title: 'Interface', user: p_user, state:p_state});
+    }
 }
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-    res.render('interface', { title: 'Interface'});
+router.get('/', function(p_req, p_res, p_next) {
+    //res.render('interface', { title: 'Interface'});
+    p_res.json({err:'not support'});
 });
 
 router.get('/api', function (p_req, p_res, p_next) {
@@ -40,9 +53,11 @@ router.get('/api', function (p_req, p_res, p_next) {
     var _hash = M_stateToHash[_state];
     if(!_hash){
         var _stateObj = JSON.parse('{' + _state + '}');
-        _hash = M_md5.update(_state).digest('hex');
+        var _md5 = Crypto.createHash('md5')
+        _hash = _md5.update(_state).digest('hex');
+
         M_stateToHash[_state] = _hash;
-        M_hashToObj[_hash] = _stateObj;
+        M_hashToStateObj[_hash] = _stateObj;
     }
 
     p_res.redirect(GetAuthUrl(_hash));
@@ -61,7 +76,7 @@ router.get('/_api', function (p_req, p_res, p_next) {
         return;
     }
 
-    var _stateObj = M_hashToObj[_state];
+    var _stateObj = M_hashToStateObj[_state];
     if(!_stateObj){
         p_res.json({err:'state error'});
         return;
