@@ -36,9 +36,9 @@ function DoApi(p_user, p_state, p_res) {
     }
 }
 
-function DoRpc(p_state, p_res) {
-    if(p_state.type === 'verify'){
-        var _sid = p_state.value;
+function DoRpc(p_param, p_res) {
+    if(p_param.cmd === 'verify'){
+        var _sid = p_param.value;
         if(_sid){
             var _user = M_login[_sid];
             if(_user){
@@ -48,11 +48,9 @@ function DoRpc(p_state, p_res) {
             }
         }
         p_res.json({err:'fail'});
-        return;
     }
     else{
-        console.log(p_state);
-        p_res.json({err:'state wrong'});
+        p_res.json({err:'rpc wrong'});
     }
 }
 
@@ -63,20 +61,7 @@ router.get('/', function(p_req, p_res, p_next) {
 });
 
 router.get('/rpc', function (p_req, p_res, p_next) {
-    var _state = p_req.query.state;
-    if(!_state){
-        p_res.json({err:'NO state'});
-        return;
-    }
-
-    try {
-        var _stateObj = JSON.parse('{' + _state + '}');
-        DoRpc(_stateObj, p_res);
-    }
-    catch(p_err){
-        console.log(p_err);
-        p_res.json('STATE WRONG: ' + _state);
-    }
+    DoRpc(p_req.query, p_res);
 });
 
 router.get('/api', function (p_req, p_res, p_next) {
