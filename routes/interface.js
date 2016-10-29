@@ -36,10 +36,47 @@ function DoApi(p_user, p_state, p_res) {
     }
 }
 
+function DoRpc(p_state, p_res) {
+    if(p_state.type === 'verify'){
+        var _sid = p_state.value;
+        if(_sid){
+            var _user = M_login[_sid];
+            if(_user){
+                delete M_login[_sid];
+                p_res.json({result:_user});
+                return;
+            }
+        }
+        p_res.json({err:'fail'});
+        return;
+    }
+    else{
+        console.log(p_state);
+        p_res.json({err:'state wrong'});
+    }
+}
+
 /* GET home page. */
 router.get('/', function(p_req, p_res, p_next) {
     //res.render('interface', { title: 'Interface'});
     p_res.json({err:'not support'});
+});
+
+router.get('/rpc', function (p_req, p_res, p_next) {
+    var _state = p_req.query.state;
+    if(!_state){
+        p_res.json({err:'NO state'});
+        return;
+    }
+
+    try {
+        var _stateObj = JSON.parse('{' + _state + '}');
+        DoRpc(_stateObj, p_res);
+    }
+    catch(p_err){
+        console.log(p_err);
+        p_res.json('STATE WRONG: ' + _state);
+    }
 });
 
 router.get('/api', function (p_req, p_res, p_next) {
@@ -52,12 +89,19 @@ router.get('/api', function (p_req, p_res, p_next) {
     // state -> hash -> stateobj
     var _hash = M_stateToHash[_state];
     if(!_hash){
-        var _stateObj = JSON.parse('{' + _state + '}');
-        var _md5 = Crypto.createHash('md5')
-        _hash = _md5.update(_state).digest('hex');
+        try {
+            var _stateObj = JSON.parse('{' + _state + '}');
+            var _md5 = Crypto.createHash('md5')
+            _hash = _md5.update(_state).digest('hex');
 
-        M_stateToHash[_state] = _hash;
-        M_hashToStateObj[_hash] = _stateObj;
+            M_stateToHash[_state] = _hash;
+            M_hashToStateObj[_hash] = _stateObj;
+        }
+        catch(p_err){
+            console.log(p_err);
+            p_res.json('STATE WRONG: ' + _state);
+            return;
+        }
     }
 
     p_res.redirect(GetAuthUrl(_hash));
