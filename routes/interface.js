@@ -75,7 +75,8 @@ router.get('/api', function (p_req, p_res, p_next) {
     var _hash = M_stateToHash[_state];
     if(!_hash){
         try {
-            var _stateObj = JSON.parse('{' + _state + '}');
+            //var _stateObj = JSON.parse('{' + _state + '}');
+            var _stateObj = JSON.parse(_state);
             var _md5 = Crypto.createHash('md5')
             _hash = _md5.update(_state).digest('hex');
 
