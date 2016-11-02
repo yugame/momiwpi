@@ -31,6 +31,10 @@ function DoApi(p_user, p_state, p_res) {
         console.log(p_state.value);
         p_res.redirect(p_state.value + '?sid=' + CreateSession(p_user));
     }
+    if(p_state.type === 'logindirect'){
+        console.log(p_state.value);
+        p_res.redirect(p_state.value + '?uid=' + p_user.unionid);
+    }
     else{
         p_res.render('interface', {title: 'Interface', user: p_user, state:p_state});
     }

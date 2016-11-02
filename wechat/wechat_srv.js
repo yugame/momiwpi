@@ -252,6 +252,10 @@ WechatSrv.prototype.f_push = function (p_uid, p_msg) {
     });
 };
 
+WechatSrv.prototype.f_title = function (p_uid) {
+
+};
+
 //发送红包接口
 /*
 红包格式
@@ -263,25 +267,71 @@ WechatSrv.prototype.f_push = function (p_uid, p_msg) {
  wishing        红包祝福语 小于128字符
  serial         红包序号 内部管理用
  */
-WechatSrv.prototype.f_redPack = function (p_uid, p_red) {
+WechatSrv.prototype.f_redPack = function (p_uid, p_red, p_cb) {
     var self = this;
     this.m_account.f_getOpenID(p_uid, function (p_err, p_openID) {
         if(p_err){
             console.log(p_err);
+            p_cb('f_redPack sys wrong');
             return;
         }
+
+        var _err = null;
         if(!p_openID){
-            console.log('f_redPack can not find uid with ' + p_uid);
+            _err = 'f_redPack can not find uid with ' + p_uid;
+        }
+        else if(!self.m_payment){
+            _err = 'f_redPack with no payment';
+        }
+        if(_err){
+            console.log(_err);
+            p_cb(_err);
             return;
         }
-        if(!self.m_payment){
-            console.log('f_redPack with no payment');
-            return;
-        }
-        self.m_payment.f_sendRedPack(p_openID, p_red, function (p_err, p_data) {
+
+        self.m_payment.f_sendRedPack(p_openID, p_red, function (p_err, p_result) {
             if(p_err){
                 console.log(p_err);
             }
+            p_cb(p_err, p_result);
+        });
+    });
+};
+
+//企业支付接口
+/*
+ 格式
+ amount   红包大小 单位分
+ desc     描述
+ serial   支付序号 内部管理用
+ */
+WechatSrv.prototype.f_pay = function (p_uid, p_pay, p_cb) {
+    var self = this;
+    this.m_account.f_getOpenID(p_uid, function (p_err, p_openID) {
+        if(p_err){
+            console.log(p_err);
+            p_cb('f_pay sys wrong');
+            return;
+        }
+
+        var _err = null;
+        if(!p_openID){
+            _err = 'f_pay can not find uid with ' + p_uid;
+        }
+        else if(!self.m_payment){
+            _err = 'f_pay with no payment';
+        }
+        if(_err){
+            console.log(_err);
+            p_cb(_err);
+            return;
+        }
+
+        self.m_payment.f_sendPay(p_openID, p_pay, function (p_err, p_result) {
+            if(p_err){
+                console.log(p_err);
+            }
+            p_cb(p_err, p_result);
         });
     });
 };
