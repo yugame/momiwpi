@@ -67,12 +67,12 @@ WechatSrv.prototype.f_listen = function(p_app, p_link, p_config){
         var _msg = p_req.weixin;
         var _openID = _msg.FromUserName; //用户的OPENID
 
-        self.m_account.f_getUID(_openID, function (p_err, p_uid) {
+        self.m_account.f_getAccount(_openID, function (p_err, p_account) {
             if(p_err){
                 console.log(p_err);
                 return;
             }
-            if(!p_uid){
+            if(!p_account){
                 self.m_api.getUser(_openID, function (p_err, p_result) {
                     if (p_err) {
                         console.log(p_err);
@@ -84,28 +84,30 @@ WechatSrv.prototype.f_listen = function(p_app, p_link, p_config){
                         _uid = 'none';
                     }
                     var _params = {openID:_openID, unionID:_uid, userInfo:p_result};
-                    self.m_account.f_createAccount(_params, function (p_err, p_account) {
+                    self.m_account.f_createAccount(_params, function (p_err, p_new) {
                         if(p_err){
                             console.log(p_err);
                             return;
                         }
-                        self.f_msg(_openID, p_account.unionID, _msg, p_res);
+                        self.f_msg(p_new, _msg, p_res);
                     })
                 });
                 return;
             }
-            self.f_msg(_openID, p_uid, _msg, p_res);
+            self.f_msg(p_account, _msg, p_res);
         })
     }));
 };
 
 var M_filt = {};
 
-WechatSrv.prototype.f_msg = function(p_openID, p_uid, p_msg, p_res){
+WechatSrv.prototype.f_msg = function(p_account, p_msg, p_res){
     var _msgType = p_msg.MsgType;
+    var _uid = p_account.unionID;
+    var _openID = p_account.openID;
 
     //排重 去除重复的消息
-    var _tmp = p_openID + p_msg.CreateTime;
+    var _tmp = _openID + p_msg.CreateTime;
     if (_msgType === 'text') {
         _tmp = p_msg.MsgId;
     }
@@ -140,6 +142,11 @@ WechatSrv.prototype.f_msg = function(p_openID, p_uid, p_msg, p_res){
         if (_event === 'subscribe') {
             //订阅事件
             _type = _event;
+            if(!p_account.subscribeTime){
+                _type = 'subscribe0';
+                p_account.subscribeTime = Date.now();
+                p_account.save();
+            }
         }
         else if (_event === 'unsubscribe') {
             //退订事件
@@ -167,7 +174,7 @@ WechatSrv.prototype.f_msg = function(p_openID, p_uid, p_msg, p_res){
         return;
     }
 
-    this.f_toRoute(p_openID, p_uid, _type, _content, p_res);
+    this.f_toRoute(_openID, _uid, _type, _content, p_res);
 };
 
 WechatSrv.prototype.f_updateMenu = function (p_func) {
