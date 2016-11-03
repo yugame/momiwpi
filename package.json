@@ -20,7 +20,8 @@
     "wechat": "^2.0.3",
     "wechat-api": "^1.28.0",
     "wechat-oauth": "^1.1.1",
-    "wechat-pay": "^0.2.4"
+    "wechat-pay": "^0.2.4",
+    "xml2js": "^0.4.17"
   },
   "description": "momiw.com wechat public interface",
   "main": "app.js",
