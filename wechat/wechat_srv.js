@@ -7,26 +7,11 @@ var WechatAPI = require('wechat-api');
 var DataEngine = require('../db/data_engine');
 var Account = require('../db/account');
 var Payment = require('./payment');
-var Logic = null;
 
 //在express的app上嫁接一个微信公众号提供服务
 var WechatSrv = function(p_app, p_link, p_config) {
-    if(p_config.logic){
-        try {
-            Logic = require(G_path + p_config.logic);
-        }
-        catch(p_err){
-            console.log('Load local logic fail ' + G_path + p_config.logic);
-            //process.exit();
-        }
-    }
-    if(!Logic){
-        Logic = require('../config/sample_logic');
-        console.log('use local sample logic. Find format at ./config/sample_logic');
-    }
 
-    this.m_logic = new Logic(this);
-
+    this.m_logic = null;
 //支付配置
     if(p_config.pay) {
         var _config = {
@@ -50,6 +35,11 @@ var WechatSrv = function(p_app, p_link, p_config) {
         self.m_account = new Account(self.m_data);
     })
     this.f_listen(p_app, p_link, p_config);
+};
+
+WechatSrv.prototype.f_regLogic = function (p_logic) {
+    this.m_logic = p_logic;
+    p_logic.f_setMaster(this);
 };
 
 WechatSrv.prototype.f_listen = function(p_app, p_link, p_config){
@@ -222,7 +212,12 @@ WechatSrv.prototype.f_toRoute = function (p_user, p_uid, p_type, p_msg, p_res) {
         }
     }
     try {
-        this.m_logic.f_recv(_cmd, p_res);
+        if(this.m_logic) {
+            this.m_logic.f_recv(_cmd, p_res);
+        }
+        else{
+            console.log('wechat srv no reg logic');
+        }
     }
     catch(p_err){
         console.log(p_err);

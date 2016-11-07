@@ -25,10 +25,32 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+
+var Logic = null;
+
+if(G_config.srv.logic){
+    try {
+        Logic = require(G_path + G_config.srv.logic);
+    }
+    catch(p_err){
+        console.log('Load local logic fail ' + G_path + G_config.srv.logic);
+        //process.exit();
+    }
+}
+
+if(!Logic){
+    Logic = require('./config/sample_logic');
+    console.log('use local sample logic. Find format at ./config/sample_logic');
+}
+
+var M_logic = new Logic(this);
+
+M_interface.f_regLogic(M_logic);
 app.use('/interface', M_interface);
 
 var WechatSrv = require('./wechat/wechat_srv');
-new WechatSrv(app, null, G_config.srv);
+var M_srv = new WechatSrv(app, null, G_config.srv);
+M_srv.f_regLogic(M_logic);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

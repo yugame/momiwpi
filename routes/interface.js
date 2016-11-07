@@ -10,6 +10,7 @@ var M_auth = new OAuth(G_config.srv.appid, G_config.srv.appsecret);
 var M_stateToHash = {}; //state 对应的 hash
 var M_hashToStateObj = {}; //hash 对应的已解析的 stateobj
 var M_login = {}; //sid 对应的 用户
+var M_logic = null;
 
 //获取微信授权url地址
 function GetAuthUrl(p_state) {
@@ -41,6 +42,7 @@ function DoApi(p_user, p_state, p_res) {
 }
 
 function DoRpc(p_param, p_res) {
+    //todo 安全验证
     if(p_param.cmd === 'verify'){
         console.log(p_param);
         var _sid = p_param.value;
@@ -54,10 +56,22 @@ function DoRpc(p_param, p_res) {
         }
         p_res.json({err:'fail'});
     }
+    else if(p_param.cmd === 'logic'){
+        if(M_logic){
+            M_logic.f_rpc(p_param.value, p_res);
+        }
+        else{
+            console.log('DoRpc no logic');
+        }
+    }
     else{
         p_res.json({err:'rpc wrong'});
     }
 }
+
+router.f_regLogic = function (p_logic) {
+    M_logic = p_logic;
+};
 
 /* GET home page. */
 router.get('/', function(p_req, p_res, p_next) {
