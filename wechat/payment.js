@@ -78,7 +78,7 @@ Payment.prototype.f_sendPay = function (p_openID, p_pay, p_cb) {
         _serial %= ID_RED;
     }
     _serial += ID_RED;
-    var _no = _params.mch_id + Moment().format('YYYYMMDD') + _serial;
+    var _no = _params.mchid + Moment().format('YYYYMMDD') + _serial;
     _params.partner_trade_no = _no;
 
     _params.sign = this._getSign(_params, 'MD5');

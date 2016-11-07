@@ -42,6 +42,7 @@ function DoApi(p_user, p_state, p_res) {
 
 function DoRpc(p_param, p_res) {
     if(p_param.cmd === 'verify'){
+        console.log(p_param);
         var _sid = p_param.value;
         if(_sid){
             var _user = M_login[_sid];
