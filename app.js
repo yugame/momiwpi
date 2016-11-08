@@ -54,6 +54,7 @@ M_srv.f_regLogic(M_logic);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
+    console.log(req);
     var err = new Error('Not Found');
     err.status = 404;
     next(err);

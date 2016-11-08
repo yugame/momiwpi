@@ -163,7 +163,6 @@ WechatSrv.prototype.f_msg = function(p_account, p_msg, p_res){
         console.log(p_msg);
         return;
     }
-
     this.f_toRoute(_openID, _uid, _type, _content, p_res);
 };
 
@@ -202,6 +201,7 @@ WechatSrv.prototype.f_toRoute = function (p_user, p_uid, p_type, p_msg, p_res) {
     //对管理命令做出处理
     if(_cmd.type === 'cmd'){
         if(_cmd.msg === 'admin_menu'){
+            console.log(p_user);
             if(this.f_isAdmin(p_user)){
                 this.f_updateMenu(function (p_msg) {
                     p_res.reply(p_msg);

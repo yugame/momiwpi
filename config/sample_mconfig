@@ -3,6 +3,9 @@
  */
 var MConfig = {};
 MConfig.listenPort = 6001;
+MConfig.rpcAllows = {
+    "127.0.0.1":true
+};
 
 MConfig.srv = {
     appid: "appid"

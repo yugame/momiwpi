@@ -65,14 +65,14 @@ Payment.prototype.f_sendPay = function (p_openID, p_pay, p_cb) {
         mchid: this.mchId,
         nonce_str: this._generateNonceStr(),
         sign: 0,
-        partner_trade_no: 0, //需要生成 mch_id+yyyymmdd+10位一天内不能重复的数字
+        partner_trade_no: p_pay.serial, //需要生成 mch_id+yyyymmdd+10位一天内不能重复的数字
         openid: p_openID, //! 接受红包的用户
         check_name: "NO_CHECK",
         amount: p_pay.amount, //! 红包大小 单位分
         desc: p_pay.desc,
         spbill_create_ip: '127.0.0.1' // todo 调用发红包接口的机器IP
     };
-
+/*
     var _serial = p_pay.serial;
     if(_serial >= ID_RED){
         _serial %= ID_RED;
@@ -80,7 +80,7 @@ Payment.prototype.f_sendPay = function (p_openID, p_pay, p_cb) {
     _serial += ID_RED;
     var _no = _params.mchid + Moment().format('YYYYMMDD') + _serial;
     _params.partner_trade_no = _no;
-
+*/
     _params.sign = this._getSign(_params, 'MD5');
     var _xml = this.buildXml(_params);
     //console.log(_xml);

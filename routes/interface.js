@@ -43,6 +43,7 @@ function DoApi(p_user, p_state, p_res) {
 
 function DoRpc(p_param, p_res) {
     //todo 安全验证
+    //console.log(p_res);
     if(p_param.cmd === 'verify'){
         console.log(p_param);
         var _sid = p_param.value;
@@ -79,8 +80,26 @@ router.get('/', function(p_req, p_res, p_next) {
     p_res.json({err:'not support'});
 });
 
+function GetClientIp(p_req) {
+    return p_req.headers['x-forwarded-for'] ||
+        p_req.connection.remoteAddress ||
+        p_req.socket.remoteAddress ||
+        p_req.connection.socket.remoteAddress;
+}
+
+function CheckRpcIP(p_ip) {
+    return G_config.rpcAllows[p_ip];
+}
+
 router.get('/rpc', function (p_req, p_res, p_next) {
-    DoRpc(p_req.query, p_res);
+    var _ip = GetClientIp(p_req);
+    console.log(_ip);
+    if(CheckRpcIP(_ip)){
+        DoRpc(p_req.query, p_res);
+    }
+    else{
+        p_res.json({err:'invaild ' + _ip});
+    }
 });
 
 router.get('/api', function (p_req, p_res, p_next) {
