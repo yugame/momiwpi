@@ -148,6 +148,7 @@ WechatSrv.prototype.f_msg = function(p_account, p_msg, p_res){
         }
         else if (_event === 'SCAN' || _event === 'VIEW' || _event === 'TEMPLATESENDJOBFINISH') {
             //扫描二维码事件 用户跳转页码事件 模板发送到位事件 暂不处理
+            _type = 'other';
         }
         else{
             console.log('no deal event ' + _event + ' ' + _eventKey);
@@ -158,7 +159,7 @@ WechatSrv.prototype.f_msg = function(p_account, p_msg, p_res){
     }
 
     if(_type === 'none'){
-        p_res.reply('no deal');
+        p_res.reply('');
         console.log('no deal: \n');
         console.log(p_msg);
         return;

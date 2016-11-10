@@ -43,9 +43,9 @@ function DoApi(p_user, p_state, p_res) {
 
 function DoRpc(p_param, p_res) {
     //todo 安全验证
-    //console.log(p_res);
+    console.log(p_param);
     if(p_param.cmd === 'verify'){
-        console.log(p_param);
+        //console.log(p_param);
         var _sid = p_param.value;
         if(_sid){
             var _user = M_login[_sid];
@@ -93,7 +93,7 @@ function CheckRpcIP(p_ip) {
 
 router.get('/rpc', function (p_req, p_res, p_next) {
     var _ip = GetClientIp(p_req);
-    console.log(_ip);
+    console.log('rpc by ' + _ip);
     if(CheckRpcIP(_ip)){
         DoRpc(p_req.query, p_res);
     }

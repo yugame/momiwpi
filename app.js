@@ -54,7 +54,7 @@ M_srv.f_regLogic(M_logic);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    console.log(req);
+    console.log(req.baseUrl);
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
@@ -66,7 +66,11 @@ app.use(function (req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
-        console.log(err.stack);
+        //console.log(err.stack);
+        console.log(err);
+        if(err.status != 404){
+            console.log(err.stack);
+        }
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,

@@ -54,7 +54,7 @@ Payment.prototype.f_sendRedPack = function (p_openID, p_red, p_cb) {
         if(err){
             return p_cb(err);
         }
-        self.validate(body, p_cb);
+        self.validate(body, p_cb, true);
     });
 };
 
