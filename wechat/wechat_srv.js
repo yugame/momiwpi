@@ -350,4 +350,25 @@ WechatSrv.prototype.f_noticeRoute = function (p_user, p_type, p_msg, p_res) {
     //self.m_mid.f_notice(_tobot);
 };
 
+//发送模板消息
+WechatSrv.prototype.f_workNotice = function(p_uid, p_tid, p_data){
+    var self = this;
+    this.m_account.f_getOpenID(p_uid, function (p_err, p_openID) {
+        if(p_err){
+            console.log(p_err);
+            return;
+        }
+        if(!p_openID){
+            console.log('f_workNotice can not find uid with ' + p_uid);
+            return;
+        }
+        self.m_api.sendTemplate(p_openID, p_tid, '', p_data, function(p_err){
+            if(p_err){
+                console.log(p_err);
+            }
+        });
+    });
+
+};
+
 module.exports = WechatSrv;
