@@ -26,6 +26,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', routes);
 app.use('/users', users);
 
+app.set('env', G_config.env);
+
 var Logic = null;
 
 if(G_config.srv.logic){
@@ -54,7 +56,7 @@ M_srv.f_regLogic(M_logic);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
-    console.log(req.baseUrl);
+    console.log('Not Found ' + req.path);
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
@@ -66,10 +68,10 @@ app.use(function (req, res, next) {
 // will print stacktrace
 if (app.get('env') === 'development') {
     app.use(function (err, req, res, next) {
-        //console.log(err.stack);
-        console.log(err);
+        //console.log(err);
         if(err.status != 404){
-            console.log(err.stack);
+            //console.log(err.stack);
+            console.log(err);
         }
         res.status(err.status || 500);
         res.render('error', {
@@ -78,18 +80,17 @@ if (app.get('env') === 'development') {
         });
     });
 }
-
-// production error handler
-// no stacktraces leaked to user
-/*
-app.use(function (err, req, res, next) {
-    console.log(err);
-    res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
+else {
+    //production error handler
+    //no stacktraces leaked to user
+    app.use(function (err, req, res, next) {
+        console.log(err);
+        res.status(err.status || 500);
+        res.render('error', {
+            message: err.message,
+            error: {}
+        });
     });
-});
-*/
+}
 
 module.exports = app;

@@ -7,6 +7,8 @@ MConfig.rpcAllows = {
     "127.0.0.1":true
 };
 
+MConfig.env = 'development' ; //or production
+
 MConfig.srv = {
     appid: "appid"
     ,appsecret: "appsecret"
