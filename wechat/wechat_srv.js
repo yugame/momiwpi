@@ -42,6 +42,10 @@ WechatSrv.prototype.f_regLogic = function (p_logic) {
     p_logic.f_setMaster(this);
 };
 
+WechatSrv.prototype.f_getLogic = function () {
+    return this.m_logic;
+};
+
 WechatSrv.prototype.f_listen = function(p_app, p_link, p_config){
     this.m_admin = p_config.adminOpenID;
     this.m_api = new WechatAPI(p_config.appid, p_config.appsecret);
@@ -149,6 +153,7 @@ WechatSrv.prototype.f_msg = function(p_account, p_msg, p_res){
         else if (_event === 'SCAN' || _event === 'VIEW' || _event === 'TEMPLATESENDJOBFINISH') {
             //扫描二维码事件 用户跳转页码事件 模板发送到位事件 暂不处理
             _type = 'other';
+
         }
         else{
             console.log('no deal event ' + _event + ' ' + _eventKey);
@@ -368,7 +373,20 @@ WechatSrv.prototype.f_workNotice = function(p_uid, p_tid, p_data){
             }
         });
     });
+};
 
+//生成二维码
+WechatSrv.prototype.f_createQRCode = function (p_str, p_cb) {
+    var _self = this;
+    this.m_api.createLimitQRCode(p_str, function(p_err, p_result) {
+        if (p_err) {
+            console.log(p_err);
+            p_cb('create qrcode api fail');
+            return;
+        }
+        var _url = _self.m_api.showQRCodeURL(p_result.ticket);
+        p_cb(null, _url);
+    });
 };
 
 module.exports = WechatSrv;

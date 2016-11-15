@@ -11,6 +11,7 @@ var M_stateToHash = {}; //state 对应的 hash
 var M_hashToStateObj = {}; //hash 对应的已解析的 stateobj
 var M_login = {}; //sid 对应的 用户
 var M_logic = null;
+var M_wechatSrv = null;
 
 //获取微信授权url地址
 function GetAuthUrl(p_state) {
@@ -65,13 +66,31 @@ function DoRpc(p_param, p_res) {
             console.log('DoRpc no logic');
         }
     }
+    else if(p_param.cmd === 'qrcode'){
+        if(!p_param.value){
+            p_res.json({err:'qrcode need value'});
+            return;
+        }
+        if(!M_wechatSrv){
+            console.log('qrcode no wechat srv');
+            return;
+        }
+        M_wechatSrv.f_createQRCode(p_param.value, function (p_err, p_url) {
+            if(p_err){
+                p_res.json({err:p_err});
+                return;
+            }
+            p_res.json({url:p_url});
+        });
+    }
     else{
         p_res.json({err:'rpc wrong'});
     }
 }
 
-router.f_regLogic = function (p_logic) {
-    M_logic = p_logic;
+router.f_regSrv = function (p_srv) {
+    M_wechatSrv = p_srv;
+    M_logic = M_wechatSrv.f_getLogic();
 };
 
 /* GET home page. */
@@ -115,7 +134,7 @@ router.get('/api', function (p_req, p_res, p_next) {
         try {
             //var _stateObj = JSON.parse('{' + _state + '}');
             var _stateObj = JSON.parse(_state);
-            var _md5 = Crypto.createHash('md5')
+            var _md5 = Crypto.createHash('md5');
             _hash = _md5.update(_state).digest('hex');
 
             M_stateToHash[_state] = _hash;

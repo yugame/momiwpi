@@ -46,13 +46,12 @@ if(!Logic){
 }
 
 var M_logic = new Logic(this);
-
-M_interface.f_regLogic(M_logic);
-app.use('/interface', M_interface);
-
 var WechatSrv = require('./wechat/wechat_srv');
 var M_srv = new WechatSrv(app, null, G_config.srv);
 M_srv.f_regLogic(M_logic);
+
+M_interface.f_regSrv(M_srv);
+app.use('/interface', M_interface);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
