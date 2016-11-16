@@ -44,7 +44,7 @@ Account.prototype.f_getUID = function(p_openID, p_callback){
         }
         else{
             if(!p_account){
-                p_callback(null, null);
+                p_callback(null, null, p_openID);
             }
             else{
                 self.m_openIDToUID[p_openID] = p_account.unionID;

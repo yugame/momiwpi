@@ -401,12 +401,17 @@ WechatSrv.prototype.f_enumUser = function (p_cb, p_tag, p_next) {
         var _count = p_result.count;
         for(var i = 0; i < _count; ++i){
             var _openid = p_result.data.openid[i];
-            self.m_account.f_getUID(_openid, function (p_err, p_uid) {
+            self.m_account.f_getUID(_openid, function (p_err, p_uid, p_openID) {
                 if(p_err){
                     console.log(p_err);
                     return;
                 }
-                p_cb(p_uid);
+                if(p_uid) {
+                    p_cb(p_uid);
+                }
+                else {
+                    console.log('not found uid with ' + p_openID);
+                }
             });
             //p_cb(_openid);
         }
@@ -427,6 +432,76 @@ WechatSrv.prototype.f_enumUser = function (p_cb, p_tag, p_next) {
             this.m_api.getFollowers(_f_result);
         }
     }
+};
+
+//查找标签ID
+WechatSrv.prototype.f_findTag = function (p_name, p_cb) {
+    this.m_api.getTags(function (p_err, p_result) {
+        if(p_err){
+            console.log(p_err);
+            p_cb('getTags fail');
+            return;
+        }
+        var _count = p_result.tags.length;
+        for(var i = 0; i < _count; ++i){
+            var _tag = p_result.tags[i];
+            if(_tag.name === p_name){
+                p_cb(null, _tag.id);
+                return;
+            }
+        }
+        p_cb('no found tagid with ' + p_name);
+    });
+};
+
+WechatSrv.prototype.f_tagUser = function (p_uid, p_tagName) {
+    var self = this;
+    this.f_findTag(p_tagName, function (p_err, p_tagID) {
+        if(p_err){
+            console.log(p_err);
+            return;
+        }
+        self.m_account.f_getOpenID(p_uid, function (p_err, p_openID) {
+            if(p_err){
+                console.log(p_err);
+                return;
+            }
+            self.m_api.membersBatchtagging(p_tagID, [p_openID], function (p_err, p_result) {
+                if(p_err){
+                    console.log(p_err);
+                    return;
+                }
+                if(p_result.errcode) {
+                    console.log(p_result);
+                }
+            });
+        });
+    });
+};
+
+WechatSrv.prototype.f_unTagUser = function (p_uid, p_tagName) {
+    var self = this;
+    this.f_findTag(p_tagName, function (p_err, p_tagID) {
+        if(p_err){
+            console.log(p_err);
+            return;
+        }
+        self.m_account.f_getOpenID(p_uid, function (p_err, p_openID) {
+            if(p_err){
+                console.log(p_err);
+                return;
+            }
+            self.m_api.membersBatchuntagging(p_tagID, [p_openID], function (p_err, p_result) {
+                if(p_err){
+                    console.log(p_err);
+                    return;
+                }
+                if(p_result.errcode) {
+                    console.log(p_result);
+                }
+            });
+        });
+    });
 };
 
 module.exports = WechatSrv;
