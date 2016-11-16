@@ -196,9 +196,9 @@ WechatSrv.prototype.f_isAdmin = function (p_user) {
 };
 
 //将消息送给路由
-WechatSrv.prototype.f_toRoute = function (p_user, p_uid, p_type, p_msg, p_res) {
+WechatSrv.prototype.f_toRoute = function (p_openID, p_uid, p_type, p_msg, p_res) {
     var _cmd = {
-        user: p_user,
+        openID: p_openID,
         uid: p_uid,
         type: p_type,
         msg: p_msg
@@ -207,8 +207,8 @@ WechatSrv.prototype.f_toRoute = function (p_user, p_uid, p_type, p_msg, p_res) {
     //对管理命令做出处理
     if(_cmd.type === 'cmd'){
         if(_cmd.msg === 'admin_menu'){
-            console.log(p_user);
-            if(this.f_isAdmin(p_user)){
+            console.log(p_openID);
+            if(this.f_isAdmin(p_openID)){
                 this.f_updateMenu(function (p_msg) {
                     p_res.reply(p_msg);
                     console.log(p_msg);
@@ -387,6 +387,46 @@ WechatSrv.prototype.f_createQRCode = function (p_str, p_cb) {
         var _url = _self.m_api.showQRCodeURL(p_result.ticket);
         p_cb(null, _url);
     });
+};
+
+//遍历用户 p_tag
+WechatSrv.prototype.f_enumUser = function (p_cb, p_tag, p_next) {
+    var self = this;
+
+    var _f_result = function (p_err, p_result) {
+        if(p_err){
+            console.log(p_err);
+            return;
+        }
+        var _count = p_result.count;
+        for(var i = 0; i < _count; ++i){
+            var _openid = p_result.data.openid[i];
+            self.m_account.f_getUID(_openid, function (p_err, p_uid) {
+                if(p_err){
+                    console.log(p_err);
+                    return;
+                }
+                p_cb(p_uid);
+            });
+            //p_cb(_openid);
+        }
+        var _next = p_result.next_openid;
+        if(_next) {
+            self.f_enumUser(p_cb, p_tag, _next);
+        }
+    };
+
+    if(p_tag){
+        //todo 按tag遍历
+    }
+    else {
+        if(p_next) {
+            this.m_api.getFollowers(p_next, _f_result);
+        }
+        else{
+            this.m_api.getFollowers(_f_result);
+        }
+    }
 };
 
 module.exports = WechatSrv;
