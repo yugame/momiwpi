@@ -54,7 +54,6 @@ Account.prototype.f_getUID = function(p_openID, p_callback){
     });
 };
 
-
 Account.prototype.f_getAccount = function(p_openID, p_callback){
     var _account = this.m_openIDToAccount[p_openID];
     if(_account){

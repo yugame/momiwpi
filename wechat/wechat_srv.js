@@ -6,6 +6,7 @@ var Wechat = require('wechat');
 var WechatAPI = require('wechat-api');
 var DataEngine = require('../db/data_engine');
 var Account = require('../db/account');
+var QrCode = require('../db/qrcode');
 var Payment = require('./payment');
 
 //在express的app上嫁接一个微信公众号提供服务
@@ -33,6 +34,7 @@ var WechatSrv = function(p_app, p_link, p_config) {
             process.exit();
         }
         self.m_account = new Account(self.m_data);
+        self.m_qrCode = new QrCode(self.m_data);
     })
     this.f_listen(p_app, p_link, p_config);
 };
@@ -377,15 +379,36 @@ WechatSrv.prototype.f_workNotice = function(p_uid, p_tid, p_data){
 
 //生成二维码
 WechatSrv.prototype.f_createQRCode = function (p_str, p_cb) {
-    var _self = this;
-    this.m_api.createLimitQRCode(p_str, function(p_err, p_result) {
-        if (p_err) {
+    var self = this;
+    this.m_qrCode.f_getUrl(p_str, function (p_err, p_url) {
+        if(p_err){
             console.log(p_err);
-            p_cb('create qrcode api fail');
+            p_cb('f_getUrl fail');
             return;
         }
-        var _url = _self.m_api.showQRCodeURL(p_result.ticket);
-        p_cb(null, _url);
+        if(p_url){
+            p_cb(null, p_url);
+            return;
+        }
+
+        //self.m_api.createLimitQRCode(p_str, function(p_err, p_result) {
+        self.m_api.createTmpQRCode(p_str, 604800, function(p_err, p_result) {
+            if (p_err) {
+                console.log(p_err);
+                p_cb('create qrcode api fail');
+                return;
+            }
+            var _url = self.m_api.showQRCodeURL(p_result.ticket);
+            self.m_qrCode.f_create(p_str, _url, p_result.expire_seconds, function (p_err, p_code) {
+                if (p_err) {
+                    console.log(p_err);
+                    p_cb('create qrcode db fail');
+                    return;
+                }
+                p_cb(null, p_code.url);
+            });
+        });
+
     });
 };
 
