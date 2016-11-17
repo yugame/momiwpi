@@ -63,6 +63,9 @@ app.use('/interface', M_interface);
 
 if(G_config.page){
     var Page = require(G_config.page);
+    if(Page.f_regSrv) {
+        Page.f_regSrv(M_srv);
+    }
     app.use('/page', Page);
 }
 

@@ -63,11 +63,10 @@ QrCode.prototype.f_get = function(p_scene, p_cb){
             p_cb(null, null);
             return;
         }
-        if(!this.f_verify(p_code)) {
+        if(!self.f_verify(p_code)) {
             p_cb(null, null);
             return
         }
-        
         self.m_sceneToQrCode[p_scene] = p_code;
         p_cb(null, p_code);
     });
