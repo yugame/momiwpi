@@ -38,7 +38,7 @@ function DoApi(p_user, p_state, p_res) {
         p_res.redirect(p_state.value + '?uid=' + p_user.unionid);
     }
     else{
-        p_res.render('interface', {title: 'Interface', user: p_user, state:p_state});
+        p_res.json({err:'state type wrong ' + p_state.type});
     }
 }
 
@@ -95,7 +95,6 @@ router.f_regSrv = function (p_srv) {
 
 /* GET home page. */
 router.get('/', function(p_req, p_res, p_next) {
-    //res.render('interface', { title: 'Interface'});
     p_res.json({err:'not support'});
 });
 
@@ -127,7 +126,6 @@ router.get('/api', function (p_req, p_res, p_next) {
         p_res.json({err:'NO state'});
         return;
     }
-
     // state -> hash -> stateobj
     var _hash = M_stateToHash[_state];
     if(!_hash){
@@ -146,7 +144,6 @@ router.get('/api', function (p_req, p_res, p_next) {
             return;
         }
     }
-
     p_res.redirect(GetAuthUrl(_hash));
 });
 
@@ -182,8 +179,6 @@ router.get('/_api', function (p_req, p_res, p_next) {
                 return;
             }
             DoApi(p_result, _stateObj, p_res);
-            //console.log(p_result);
-            //p_res.render('interface', {title: 'Interface', openid: _openid});
         });
     });
 });

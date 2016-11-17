@@ -6,13 +6,17 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
-var users = require('./routes/users');
 var M_interface = require('./routes/interface')
 
 var app = express();
 
 // view engine setup
-app.set('views', path.join(__dirname, 'views'));
+if(G_config.views) {
+    app.set('views', path.join(__dirname, G_config.views));
+}
+else{
+    app.set('views', path.join(__dirname, 'views'));
+}
 app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
@@ -24,18 +28,22 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/users', users);
 
-app.set('env', G_config.env);
+if(G_config.env) {
+    app.set('env', G_config.env);
+}
+else{
+    app.set('env', 'development');
+}
 
 var Logic = null;
 
-if(G_config.srv.logic){
+if(G_config.logic){
     try {
-        Logic = require(G_path + G_config.srv.logic);
+        Logic = require(G_path + G_config.logic);
     }
     catch(p_err){
-        console.log('Load local logic fail ' + G_path + G_config.srv.logic);
+        console.log('Load local logic fail ' + G_path + G_config.logic);
         //process.exit();
     }
 }
@@ -52,6 +60,11 @@ M_srv.f_regLogic(M_logic);
 
 M_interface.f_regSrv(M_srv);
 app.use('/interface', M_interface);
+
+if(G_config.page){
+    var Page = require(G_config.page);
+    app.use('/page', Page);
+}
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -9,6 +9,10 @@ MConfig.rpcAllows = {
 
 MConfig.env = 'development' ; //or production
 
+//MConfig.logic = 'logic/main.js' ;
+//MConfig.views = 'logic/views';
+//MConfig.page = 'logic/page';
+
 MConfig.srv = {
     appid: "appid"
     ,appsecret: "appsecret"
@@ -20,7 +24,6 @@ MConfig.srv = {
     ,myName:"web_sword"
     ,adminOpenID:"openID"
     ,dbUrl:"mongodb://localhost/dbname"
-    ,logic:"logic/main.js"
 
     //支付相关
     ,pay:"false" //使用支付相关开关
