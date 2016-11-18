@@ -390,7 +390,6 @@ WechatSrv.prototype.f_createQRCode = function (p_str, p_cb) {
             p_cb(null, p_url);
             return;
         }
-
         //self.m_api.createLimitQRCode(p_str, function(p_err, p_result) {
         self.m_api.createTmpQRCode(p_str, 604800, function(p_err, p_result) {
             if (p_err) {
@@ -408,7 +407,6 @@ WechatSrv.prototype.f_createQRCode = function (p_str, p_cb) {
                 p_cb(null, p_code.url);
             });
         });
-
     });
 };
 
@@ -525,6 +523,28 @@ WechatSrv.prototype.f_unTagUser = function (p_uid, p_tagName) {
             });
         });
     });
+};
+
+//获取jssdk所需要的config
+WechatSrv.prototype.f_getJsConfig = function (p_url, p_apiList, p_cb, p_debug) {
+    if(!p_debug){
+        p_debug = false;
+    }
+    var _param = {
+        debug: p_debug,
+        jsApiList:p_apiList,
+        url: p_url
+    };
+
+    this.m_api.getJsConfig(_param, function (p_err, p_config) {
+        if(p_err){
+            console.log(p_err);
+            p_cb('f_getJsConfig fail');
+            return;
+        }
+        p_cb(null, p_config);
+    });
+
 };
 
 module.exports = WechatSrv;
