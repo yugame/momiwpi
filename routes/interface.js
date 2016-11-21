@@ -29,13 +29,17 @@ function CreateSession (p_user) {
 //p_state {type:'test', value:11} 执行相关命令
 function DoApi(p_user, p_state, p_res) {
     console.log(p_state);
+    var _connect = '?';
+    if(p_state.value.indexOf('?') > 0){
+        _connect = '&';
+    }
     if(p_state.type === 'login'){
         console.log(p_state.value);
-        p_res.redirect(p_state.value + '?sid=' + CreateSession(p_user));
+        p_res.redirect(p_state.value + _connect + 'sid=' + CreateSession(p_user));
     }
     else if(p_state.type === 'logindirect'){
         console.log(p_state.value);
-        p_res.redirect(p_state.value + '?uid=' + p_user.unionid);
+        p_res.redirect(p_state.value + _connect + 'uid=' + p_user.unionid);
     }
     else{
         p_res.json({err:'state type wrong ' + p_state.type});
