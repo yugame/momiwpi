@@ -60,6 +60,7 @@ M_srv.f_regLogic(M_logic);
 
 M_interface.f_regSrv(M_srv);
 app.use('/interface', M_interface);
+app.use('/i', M_interface);
 
 if(G_config.page){
     var Page = require(G_config.page);

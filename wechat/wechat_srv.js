@@ -535,7 +535,11 @@ WechatSrv.prototype.f_getJsConfig = function (p_url, p_apiList, p_cb, p_debug) {
         jsApiList:p_apiList,
         url: p_url
     };
-
+    /*
+    this.m_api.getLatestTicket(function (p_err, p_ticket) {
+        console.log(p_ticket);
+    });
+    */
     this.m_api.getJsConfig(_param, function (p_err, p_config) {
         if(p_err){
             console.log(p_err);
@@ -545,6 +549,11 @@ WechatSrv.prototype.f_getJsConfig = function (p_url, p_apiList, p_cb, p_debug) {
         p_cb(null, p_config);
     });
 
+};
+
+WechatSrv.prototype.f_getSessionUser = function () {
+    console.log('not apply');
+    return null;
 };
 
 module.exports = WechatSrv;

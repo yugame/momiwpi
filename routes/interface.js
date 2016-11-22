@@ -28,17 +28,15 @@ function CreateSession (p_user) {
 
 //p_state {type:'test', value:11} 执行相关命令
 function DoApi(p_user, p_state, p_res) {
-    console.log(p_state);
+    //console.log(p_state);
     var _connect = '?';
     if(p_state.value.indexOf('?') > 0){
         _connect = '&';
     }
     if(p_state.type === 'login'){
-        console.log(p_state.value);
         p_res.redirect(p_state.value + _connect + 'sid=' + CreateSession(p_user));
     }
     else if(p_state.type === 'logindirect'){
-        console.log(p_state.value);
         p_res.redirect(p_state.value + _connect + 'uid=' + p_user.unionid);
     }
     else{
@@ -48,9 +46,8 @@ function DoApi(p_user, p_state, p_res) {
 
 function DoRpc(p_param, p_res) {
     //todo 安全验证
-    console.log(p_param);
+    //console.log(p_param);
     if(p_param.cmd === 'verify'){
-        //console.log(p_param);
         var _sid = p_param.value;
         if(_sid){
             var _user = M_login[_sid];
@@ -95,6 +92,16 @@ function DoRpc(p_param, p_res) {
 router.f_regSrv = function (p_srv) {
     M_wechatSrv = p_srv;
     M_logic = M_wechatSrv.f_getLogic();
+    M_wechatSrv.f_getSessionUser = function (p_sid) {
+        if(p_sid){
+            var _user = M_login[p_sid];
+            if(_user){
+                delete M_login[p_sid];
+                return _user;
+            }
+        }
+        return null;
+    }
 };
 
 /* GET home page. */
@@ -115,7 +122,7 @@ function CheckRpcIP(p_ip) {
 
 router.get('/rpc', function (p_req, p_res, p_next) {
     var _ip = GetClientIp(p_req);
-    console.log('rpc by ' + _ip);
+    //console.log('rpc by ' + _ip);
     if(CheckRpcIP(_ip)){
         DoRpc(p_req.query, p_res);
     }
@@ -130,6 +137,7 @@ router.get('/api', function (p_req, p_res, p_next) {
         p_res.json({err:'NO state'});
         return;
     }
+    //console.log(_state);
     // state -> hash -> stateobj
     var _hash = M_stateToHash[_state];
     if(!_hash){
