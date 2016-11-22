@@ -11,6 +11,7 @@ MConfig.env = 'development' ; //or production
 
 //MConfig.logic = 'logic/main.js' ;
 //MConfig.views = 'logic/views';
+//MConfig.www = 'logic/www';
 //MConfig.page = 'logic/page';
 
 MConfig.srv = {
