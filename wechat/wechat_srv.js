@@ -152,10 +152,13 @@ WechatSrv.prototype.f_msg = function(p_account, p_msg, p_res){
             //菜单点击事件
             _type = 'cmd';
         }
-        else if (_event === 'SCAN' || _event === 'VIEW' || _event === 'TEMPLATESENDJOBFINISH') {
+        else if(_event === 'SCAN'){
+            _type = 'scan';
+            console.log(p_msg);
+        }
+        else if (_event === 'VIEW' || _event === 'TEMPLATESENDJOBFINISH') {
             //扫描二维码事件 用户跳转页码事件 模板发送到位事件 暂不处理
             _type = 'other';
-
         }
         else{
             console.log('no deal event ' + _event + ' ' + _eventKey);
@@ -380,6 +383,7 @@ WechatSrv.prototype.f_workNotice = function(p_uid, p_tid, p_data){
 //生成二维码
 WechatSrv.prototype.f_createQRCode = function (p_str, p_cb) {
     var self = this;
+    console.log(p_str);
     this.m_qrCode.f_getUrl(p_str, function (p_err, p_url) {
         if(p_err){
             console.log(p_err);
@@ -390,8 +394,8 @@ WechatSrv.prototype.f_createQRCode = function (p_str, p_cb) {
             p_cb(null, p_url);
             return;
         }
-        //self.m_api.createLimitQRCode(p_str, function(p_err, p_result) {
-        self.m_api.createTmpQRCode(p_str, 604800, function(p_err, p_result) {
+        self.m_api.createLimitQRCode(p_str, function(p_err, p_result) {
+        //self.m_api.createTmpQRCode(p_str, 604800, function(p_err, p_result) { //临时二维码不支持字符串 //todo
             if (p_err) {
                 console.log(p_err);
                 p_cb('create qrcode api fail');
