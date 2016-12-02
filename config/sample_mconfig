@@ -35,6 +35,8 @@ MConfig.srv = {
 
     //微信网页授权相关
     ,authUrl:"authUrl"
+
+    //,workDir: 'logic/' //工作目录 影响menu.json的读取
 };
 
 

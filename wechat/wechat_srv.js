@@ -26,6 +26,11 @@ var WechatSrv = function(p_app, p_link, p_config) {
         this.m_payment = new Payment(_config);
     }
 
+    this.m_menu = './menu.json';
+    if(p_config.workDir){
+        this.m_menu = p_config.workDir + 'menu.json';
+    }
+
     this.m_data = new DataEngine(p_config.dbUrl);
     var self = this;
     this.m_data.f_connect(function (p_err) {
@@ -180,7 +185,7 @@ WechatSrv.prototype.f_msg = function(p_account, p_msg, p_res){
 WechatSrv.prototype.f_updateMenu = function (p_func) {
     var self = this;
 
-    Fs.readFile('./menu.json',function(p_err, p_data){
+    Fs.readFile(this.m_menu, function(p_err, p_data){
         if(p_err){
             p_func(p_err.toString());
             return;
