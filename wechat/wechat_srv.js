@@ -146,12 +146,15 @@ WechatSrv.prototype.f_msg = function(p_account, p_msg, p_res){
             if(!p_account.subscribeTime){
                 _type = 'subscribe0';
                 p_account.subscribeTime = Date.now();
+                p_account.cancel = false;
                 p_account.save();
             }
         }
         else if (_event === 'unsubscribe') {
             //退订事件
             _type = _event;
+            p_account.cancel = true;
+            p_account.save();
         }
         else if(_event === 'CLICK') {
             //菜单点击事件
@@ -203,6 +206,25 @@ WechatSrv.prototype.f_updateMenu = function (p_func) {
 
 WechatSrv.prototype.f_isAdmin = function (p_user) {
     return p_user === this.m_admin;
+};
+
+WechatSrv.prototype.f_isSubUser = function (p_uid, p_cb) {
+    this.m_account.f_getAccountByUid(p_uid, function (p_err, p_account) {
+        if(p_err){
+            console.log(p_err);
+            p_cb('f_isSubUser sys fail!');
+            return;
+        }
+        if(!p_account){
+            p_cb(null, false);
+            return;
+        }
+        if(p_account.cancel){
+            p_cb(null, false);
+            return;
+        }
+        p_cb(null, true);
+    });
 };
 
 //将消息送给路由

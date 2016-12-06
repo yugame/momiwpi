@@ -7,7 +7,8 @@ var M_schema = {
     unionID: String,
     userInfo: {},
     createTime: Number,
-    subscribeTime: Number
+    subscribeTime: Number,
+    cancel: Boolean
 };
 
 var Account = function (p_dataEngine) {
@@ -23,7 +24,8 @@ Account.prototype.f_createAccount = function(p_params, p_callback) {
         unionID: p_params.unionID,
         userInfo: p_params.userInfo,
         createTime: Date.now(),
-        subscribeTime: 0
+        subscribeTime: 0,
+        cancel: false
     });
     _account.save(p_callback);
 };
@@ -99,6 +101,17 @@ Account.prototype.f_getOpenID = function(p_uid, p_callback){
                 p_callback(null, p_account.openID);
             }
         }
+    });
+};
+
+Account.prototype.f_getAccountByUid = function(p_uid, p_callback){
+    var self = this;
+    this.f_getOpenID(p_uid, function (p_err, p_openID){
+        if(p_err){
+            p_callback(p_err);
+            return;
+        }
+        self.f_getAccount(p_openID, p_callback);
     });
 };
 
