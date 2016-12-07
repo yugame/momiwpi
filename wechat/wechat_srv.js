@@ -162,14 +162,12 @@ WechatSrv.prototype.f_msg = function(p_account, p_msg, p_res){
         }
         else if(_event === 'SCAN'){
             _type = 'scan';
-            console.log(p_msg);
         }
-        else if (_event === 'VIEW' || _event === 'TEMPLATESENDJOBFINISH') {
-            //扫描二维码事件 用户跳转页码事件 模板发送到位事件 暂不处理
-            _type = 'other';
+        else if (_event === 'VIEW'){
+            _type = 'view';
         }
-        else{
-            console.log('no deal event ' + _event + ' ' + _eventKey);
+        else if (_event === 'TEMPLATESENDJOBFINISH') {
+            //模板发送到位事件 暂不处理
         }
     }
     else{
@@ -410,7 +408,7 @@ WechatSrv.prototype.f_workNotice = function(p_uid, p_tid, p_data){
 //生成二维码
 WechatSrv.prototype.f_createQRCode = function (p_str, p_cb) {
     var self = this;
-    console.log(p_str);
+    //console.log(p_str);
     this.m_qrCode.f_getUrl(p_str, function (p_err, p_url) {
         if(p_err){
             console.log(p_err);
