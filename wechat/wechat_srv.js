@@ -7,11 +7,11 @@ var WechatAPI = require('wechat-api');
 var DataEngine = require('../db/data_engine');
 var Account = require('../db/account');
 var QrCode = require('../db/qrcode');
+var MKey = require('../db/mkey');
 var Payment = require('./payment');
 
 //在express的app上嫁接一个微信公众号提供服务
 var WechatSrv = function(p_app, p_link, p_config) {
-
     this.m_logic = null;
 //支付配置
     if(p_config.pay) {
@@ -40,6 +40,7 @@ var WechatSrv = function(p_app, p_link, p_config) {
         }
         self.m_account = new Account(self.m_data);
         self.m_qrCode = new QrCode(self.m_data);
+        MKey.F_init(self.m_data);
     })
     this.f_listen(p_app, p_link, p_config);
 };
@@ -408,7 +409,6 @@ WechatSrv.prototype.f_workNotice = function(p_uid, p_tid, p_data){
 //生成二维码
 WechatSrv.prototype.f_createQRCode = function (p_str, p_cb) {
     var self = this;
-    //console.log(p_str);
     this.m_qrCode.f_getUrl(p_str, function (p_err, p_url) {
         if(p_err){
             console.log(p_err);
@@ -419,15 +419,22 @@ WechatSrv.prototype.f_createQRCode = function (p_str, p_cb) {
             p_cb(null, p_url);
             return;
         }
-        self.m_api.createLimitQRCode(p_str, function(p_err, p_result) {
-        //self.m_api.createTmpQRCode(p_str, 604800, function(p_err, p_result) { //临时二维码不支持字符串 //todo
+
+        var _sceneID = MKey.F_get('scene_cur');
+        if(!_sceneID){
+            _sceneID = 1;
+        }
+        MKey.F_set('scene_cur', _sceneID + 1);
+
+        //self.m_api.createLimitQRCode(p_str, function(p_err, p_result) {
+        self.m_api.createTmpQRCode(_sceneID, 604800, function(p_err, p_result) { //临时二维码不支持字符串 //todo
             if (p_err) {
                 console.log(p_err);
                 p_cb('create qrcode api fail');
                 return;
             }
             var _url = self.m_api.showQRCodeURL(p_result.ticket);
-            self.m_qrCode.f_create(p_str, _url, p_result.expire_seconds, function (p_err, p_code) {
+            self.m_qrCode.f_create(p_str, _sceneID, _url, p_result.expire_seconds, function (p_err, p_code) {
                 if (p_err) {
                     console.log(p_err);
                     p_cb('create qrcode db fail');
@@ -583,6 +590,21 @@ WechatSrv.prototype.f_getJsConfig = function (p_url, p_apiList, p_cb, p_debug) {
 WechatSrv.prototype.f_getSessionUser = function () {
     console.log('not apply');
     return null;
+};
+
+WechatSrv.prototype.f_getScene = function (p_sceneID, p_cb) {
+    this.m_qrCode.f_get(p_sceneID, function (p_err, p_code) {
+        if(p_err){
+            console.log(p_err);
+            p_cb('f_getScene fail ' + p_sceneID);
+            return;
+        }
+        if(!p_code){
+            p_cb('f_getScene not found ' + p_sceneID);
+            return;
+        }
+        p_cb(null, p_code.scene);
+    });
 };
 
 module.exports = WechatSrv;
