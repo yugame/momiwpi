@@ -68,36 +68,13 @@ WechatSrv.prototype.f_listen = function(p_app, p_link, p_config){
     p_app.use(_route, Wechat(p_config, function (p_req, p_res, p_next) {
         var _msg = p_req.weixin;
         var _openID = _msg.FromUserName; //用户的OPENID
-
-        self.m_account.f_getAccount(_openID, function (p_err, p_account) {
+        self.f_getUser(_openID, function (p_err, p_account) {
             if(p_err){
                 console.log(p_err);
                 return;
             }
-            if(!p_account){
-                self.m_api.getUser(_openID, function (p_err, p_result) {
-                    if (p_err) {
-                        console.log(p_err);
-                        return;
-                    }
-                    //console.log(p_result);
-                    var _uid = p_result.unionid;
-                    if(!_uid){
-                        _uid = 'none';
-                    }
-                    var _params = {openID:_openID, unionID:_uid, userInfo:p_result};
-                    self.m_account.f_createAccount(_params, function (p_err, p_new) {
-                        if(p_err){
-                            console.log(p_err);
-                            return;
-                        }
-                        self.f_msg(p_new, _msg, p_res);
-                    })
-                });
-                return;
-            }
             self.f_msg(p_account, _msg, p_res);
-        })
+        });
     }));
 };
 
@@ -224,6 +201,84 @@ WechatSrv.prototype.f_isSubUser = function (p_uid, p_cb) {
         }
         p_cb(null, true);
     });
+};
+
+WechatSrv.prototype.f_getUserInfo = function (p_uid, p_cb) {
+    this.m_account.f_getAccountByUid(p_uid, function (p_err, p_account) {
+        if(p_err){
+            console.log(p_err);
+            p_cb('f_getUserInfo sys fail!');
+            return;
+        }
+        if(!p_account){
+            p_cb('f_getUserInfo ' +  p_uid + ' no account!!');
+            return;
+        }
+        p_cb(null, p_account.userInfo);
+    });
+};
+
+//根据openID获取用户信息 (有openID是一定能得到用户信息的)
+WechatSrv.prototype.f_getUser = function (p_openID, p_cb) {
+    var self = this;
+    this.m_account.f_getAccount(p_openID, function (p_err, p_account) {
+        if (p_err) {
+            console.log(p_err);
+            p_cb('f_getUser sys fail');
+            return;
+        }
+        if (!p_account) {
+            self.m_api.getUser(p_openID, function (p_err, p_result) {
+                if (p_err) {
+                    console.log(p_err);
+                    p_cb('f_getUser sys fail');
+                    return;
+                }
+                var _uid = p_result.unionid;
+                if (!_uid) {
+                    _uid = 'none';
+                }
+                var _params = {openID: p_openID, unionID: _uid, userInfo: p_result};
+                self.m_account.f_createAccount(_params, function (p_err, p_new) {
+                    if (p_err) {
+                        console.log(p_err);
+                        p_cb('f_getUser sys fail');
+                        return;
+                    }
+                    p_cb(null, p_new);
+                })
+            });
+            return;
+        }
+        p_cb(null, p_account);
+    });
+};
+
+WechatSrv.prototype.f_getUserDirect = function (p_openID, p_cb) {
+    this.m_account.f_getAccount(p_openID, function (p_err, p_account) {
+        if (p_err) {
+            console.log(p_err);
+            p_cb('f_getUser sys fail');
+            return;
+        }
+        p_cb(null, p_account);
+    });
+};
+
+WechatSrv.prototype.f_createUser = function (p_openID, p_userInfo, p_cb) {
+    var _uid = p_userInfo.unionid;
+    if (!_uid) {
+        _uid = 'none';
+    }
+    var _params = {openID: p_openID, unionID: _uid, userInfo: p_userInfo};
+    this.m_account.f_createAccount(_params, function (p_err, p_new) {
+        if (p_err) {
+            console.log(p_err);
+            p_cb('f_createUser sys fail');
+            return;
+        }
+        p_cb(null, p_new);
+    })
 };
 
 //将消息送给路由

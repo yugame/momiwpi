@@ -185,13 +185,41 @@ router.get('/_api', function (p_req, p_res, p_next) {
         }
         //var accessToken = result.data.access_token;
         var _openid = p_result.data.openid;
-        M_auth.getUser(_openid, function (p_err, p_result) {
-            if(p_err){
-                p_res.json({err: p_err});
-                return;
-            }
-            DoApi(p_result, _stateObj, p_res);
-        });
+
+        if(M_wechatSrv) {
+            M_wechatSrv.f_getUserDirect(_openid, function (p_err, p_account) {
+                if (p_err) {
+                    p_res.json({err: p_err});
+                    return;
+                }
+                if(p_account) {
+                    DoApi(p_account.userInfo, _stateObj, p_res);
+                    return;
+                }
+                M_auth.getUser(_openid, function (p_err, p_result) {
+                    if (p_err) {
+                        p_res.json({err: p_err});
+                        return;
+                    }
+                    M_wechatSrv.f_createUser(_openid, p_result, function (p_err, p_newAccount) {
+                        if(p_err){
+                            console.log(p_err);
+                            return;
+                        }
+                        DoApi(p_newAccount.userInfo, _stateObj, p_res);
+                    });
+                });
+            });
+        }
+        else {
+            M_auth.getUser(_openid, function (p_err, p_result) {
+                if (p_err) {
+                    p_res.json({err: p_err});
+                    return;
+                }
+                DoApi(p_result, _stateObj, p_res);
+            });
+        }
     });
 });
 
