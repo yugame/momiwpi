@@ -3,6 +3,8 @@
  */
 var Mon = require('mongoose');
 
+Mon.Promise = global.Promise;
+
 var MData = function(p_url){
     this.m_url = p_url;
 };
