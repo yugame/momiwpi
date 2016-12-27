@@ -40,7 +40,10 @@ var WechatSrv = function(p_app, p_link, p_config) {
         }
         self.m_account = new Account(self.m_data);
         self.m_qrCode = new QrCode(self.m_data);
-        MKey.F_init(self.m_data);
+        MKey.F_init(self.m_data)
+            .then(function (p_db) {
+                //self.f_listen(p_app, p_link, p_config);
+            });
     })
     this.f_listen(p_app, p_link, p_config);
 };

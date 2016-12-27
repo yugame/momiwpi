@@ -1,45 +1,23 @@
 ﻿/**
  * Created by yushi on 2016/6/16.
  */
+
+//v0.0.2 2016/12/27
+var Promise = require("bluebird");
+
 var M_schema = {
     key: {type:String, unique:true},
     value: {}
 };
 
-var MKey = function (p_dataEngine) {
-    this.m_keyModel = p_dataEngine.f_createModel('key', M_schema);
+var MKey = function (p_db) {
+    this.m_keyModel = p_db.f_createModel('key', M_schema);
     this.m_keyMap = {}; //KEY对应的存储数据
     this.m_kv = {}; //系统直接使用的KEY VALUE容器
 };
 
-/*
-MKey.prototype.f_LoadAll = function(p_cb){
-    this.m_keyModel.find({},function(p_err, p_result){
-        if(p_err){
-            console.log(p_err);
-            p_cb('MKey db fail!');
-        }
-        else {
-            if(p_result) {
-                var _count = p_result.length;
-                for(var i = 0; i < _count; ++i) {
-                    var _pair = p_result[i];
-                    var _key = _pair.key;
-                    this.m_kv[_key] = _pair.value;
-                    this.m_keyMap[_key] = _pair;
-                }
-                console.log('MKey LoadAll ' + _count);
-                p_cb(null, _count);
-            }
-            else{
-                p_cb('Load All no result');
-            }
-        }
-    });
-};
-*/
-
 MKey.prototype.f_LoadAll = function(){
+    var _pm = Promise.pending();
     var self = this;
     this.m_keyModel.find({},function(p_err, p_result){
         if(p_err){
@@ -55,12 +33,14 @@ MKey.prototype.f_LoadAll = function(){
                     self.m_keyMap[_key] = _pair;
                 }
                 console.log('MKey LoadAll ' + _count);
+                _pm.resolve();
             }
             else{
-                console.log('Load All no result');
+                _pm.reject('Load All no result');
             }
         }
     });
+    return _pm.promise;
 };
 
 MKey.prototype.f_get = function(p_key){
@@ -72,6 +52,7 @@ MKey.prototype.f_get = function(p_key){
 
 MKey.prototype.f_set = function(p_key, p_value){
     var self = this;
+
     this.m_kv[p_key] = p_value;
     if(this.m_keyMap[p_key] === undefined){
         this.m_keyModel.findOne({key: p_key}, function(p_err, p_pair){
@@ -105,11 +86,36 @@ MKey.prototype.f_set = function(p_key, p_value){
     }
 };
 
+MKey.prototype.f_del = function(p_key){
+    if(this.m_keyMap[p_key]){
+        this.m_keyMap[p_key].remove();
+        delete this.m_keyMap[p_key];
+    }
+    else{
+        this.m_keyModel.remove({key: p_key}, function(p_err) {
+            console.log(arguments);
+            if (p_err) {
+                console.log(p_err);
+                return;
+            }
+        });
+    }
+    delete this.m_kv[p_key];
+};
+
 var m_single = null;
 
-MKey.F_init = function (p_dataEngine) {
-    m_single = new MKey(p_dataEngine);
-    m_single.f_LoadAll();
+MKey.F_init = function (p_db) {
+    var _pm = Promise.pending();
+    m_single = new MKey(p_db);
+    m_single.f_LoadAll()
+        .then(function () {
+            _pm.resolve(m_single);
+        })
+        .catch(function (p_err) {
+            _pm.reject(p_err);
+        });
+    return _pm.promise;
 };
 
 MKey.F_set = function (p_key, p_value) {
