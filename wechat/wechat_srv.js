@@ -64,6 +64,15 @@ WechatSrv.prototype.f_listen = function(p_app, p_link, p_config){
         console.log(p_token);
     });
 
+    /*
+    //todo 客服信息相关
+    this.m_api.getCustomServiceList(function (p_err, p_list) {
+        console.log(p_list);
+    });
+    this.m_api.getOnlineCustomServiceList(function (p_err, p_list) {
+        console.log(p_list);
+    });
+    */
     var _route = '/' + p_config.myName;
     console.log(_route);
 
