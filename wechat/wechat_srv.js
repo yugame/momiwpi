@@ -354,7 +354,12 @@ WechatSrv.prototype.f_push = function (p_uid, p_msg) {
             console.log(p_msg);
             return;
         }
-        self.m_api.sendText(p_openID, p_msg, self.f_srvBack.bind(self, p_openID, p_msg));
+        if(p_msg instanceof Array){
+            self.m_api.sendNews(p_openID, p_msg, self.f_srvBack.bind(self, p_openID, p_msg));
+        }
+        else {
+            self.m_api.sendText(p_openID, p_msg, self.f_srvBack.bind(self, p_openID, p_msg));
+        }
     });
 };
 
