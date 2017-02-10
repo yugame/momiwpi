@@ -48,7 +48,7 @@ QrCode.prototype.f_create = function (p_scene, p_sceneID, p_url, p_expire, p_cb)
 QrCode.prototype.f_get = function(p_scene, p_cb){
     var _key = 'scene';
     var _code = this.m_sceneToQrCode[p_scene];
-    if(p_scene.length < 11){
+    if(p_scene.length < 10){
         _key = 'sceneID';
         _code = this.m_sceneIDToQrCode[p_scene];
     }
