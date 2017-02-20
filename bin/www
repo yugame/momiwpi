@@ -10,6 +10,7 @@ try {
   G_config = require(G_path + 'mconfig');
 }
 catch(p_err){
+  console.log(p_err);
   console.log('Load local mconfig fail. Find mconfig format at ./config/sample_mconfig');
   return;
 }

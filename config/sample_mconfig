@@ -9,10 +9,12 @@ MConfig.rpcAllows = {
 
 MConfig.env = 'development' ; //or production
 
-//MConfig.logic = 'logic/main.js' ;
-//MConfig.views = 'logic/views';
-//MConfig.www = 'logic/www';
-//MConfig.page = 'logic/page';
+MConfig.logic = 'logic/main.js'; //逻辑入口
+
+//网页服务映射到工作目录
+//MConfig.views = 'logic/views';   //显示模板入口
+//MConfig.www = 'logic/www';      //静态资源入口
+//MConfig.page = './logic/page';  //页面服务入口
 
 MConfig.srv = {
     appid: "appid"
@@ -27,7 +29,7 @@ MConfig.srv = {
     ,dbUrl:"mongodb://localhost/dbname"
 
     //支付相关
-    ,pay:"false" //使用支付相关开关
+    ,pay:false //使用支付相关开关
     ,mchId:"mchId"
     ,partnerKey:"partnerKey"
     ,notifyUrl:"notifyUrl"
