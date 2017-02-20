@@ -51,6 +51,7 @@ if(G_config.logic){
         Logic = require(G_path + G_config.logic);
     }
     catch(p_err){
+        console.log(p_err);
         console.log('Load local logic fail ' + G_path + G_config.logic);
         //process.exit();
     }
