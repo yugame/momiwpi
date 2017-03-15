@@ -243,7 +243,7 @@ WechatSrv.prototype.f_getUser = function (p_openID, p_cb) {
             self.m_api.getUser(p_openID, function (p_err, p_result) {
                 if (p_err) {
                     console.log(p_err);
-                    p_cb('f_getUser sys fail');
+                    p_cb('api getUser fail');
                     return;
                 }
                 var _uid = p_result.unionid;

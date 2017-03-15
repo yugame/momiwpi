@@ -117,7 +117,8 @@ function GetClientIp(p_req) {
 }
 
 function CheckRpcIP(p_ip) {
-    return G_config.rpcAllows[p_ip];
+    var _ip = p_ip.split(',')[0].trim();
+    return G_config.rpcAllows[_ip];
 }
 
 router.get('/rpc', function (p_req, p_res, p_next) {
@@ -127,6 +128,7 @@ router.get('/rpc', function (p_req, p_res, p_next) {
         DoRpc(p_req.query, p_res);
     }
     else{
+        console.log('rpc by invalid ' + _ip);
         p_res.json({err:'invaild ' + _ip});
     }
 });

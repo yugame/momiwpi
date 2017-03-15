@@ -1,27 +1,27 @@
 {
   "name": "momiwpi",
-  "version": "0.1.2",
+  "version": "0.1.9",
   "bin": {
-    "momiwpi": "bin/www"
+    "momistart": "./bin/momistart"
   },
   "scripts": {
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "bluebird": "^3.4.7",
+    "bluebird": "^3.5.0",
     "body-parser": "~1.15.1",
-    "cookie-parser": "~1.4.3",
-    "debug": "~2.2.0",
-    "ejs": "~2.4.1",
-    "express": "~4.13.4",
-    "log4js": "^1.0.1",
-    "moment": "^2.15.1",
-    "mongoose": "^4.5.9",
-    "morgan": "~1.7.0",
-    "serve-favicon": "~2.3.0",
-    "wechat": "^2.0.3",
-    "wechat-api": "^1.28.0",
-    "wechat-oauth": "^1.1.1",
+    "cookie-parser": "^1.4.3",
+    "debug": "^2.2.0",
+    "ejs": "^2.4.2",
+    "express": "^4.13.4",
+    "log4js": "^1.1.1",
+    "moment": "^2.17.1",
+    "mongoose": "^4.9.0",
+    "morgan": "^1.7.0",
+    "serve-favicon": "^2.3.2",
+    "wechat": "^2.1.0",
+    "wechat-api": "^1.32.0",
+    "wechat-oauth": "^1.2.1",
     "wechat-pay": "^0.2.4",
     "xml2js": "^0.4.17"
   },
